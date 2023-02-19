@@ -1,0 +1,104 @@
+[gd_scene load_steps=15 format=3 uid="uid://bnqfqmssmcjxc"]
+
+[ext_resource type="Texture2D" uid="uid://bbwmsstynq2p0" path="res://griglia.svg" id="1_cks38"]
+[ext_resource type="Script" path="res://CharacterBody3D.gd" id="2_u28g7"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_u5me3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2bjt8"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_wxjxi"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_by5k5"]
+
+[sub_resource type="Sky" id="Sky_cw80l"]
+sky_material = SubResource("ProceduralSkyMaterial_by5k5")
+
+[sub_resource type="Environment" id="Environment_kelst"]
+sky = SubResource("Sky_cw80l")
+tonemap_mode = 2
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+glow_enabled = true
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_esnp2"]
+radius = 2.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y1uod"]
+albedo_color = Color(0.388235, 0.858824, 0.388235, 1)
+albedo_texture = ExtResource("1_cks38")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_4clxm"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qebas"]
+size = Vector3(2, 1, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n4v70"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_n7v8k"]
+
+[node name="Main" type="Node"]
+
+[node name="Node3D" type="Node3D" parent="."]
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="Node3D"]
+script = ExtResource("2_u28g7")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00742, 0)
+shape = SubResource("CylinderShape3D_u5me3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D/CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.01045, 0)
+material_override = SubResource("StandardMaterial3D_2bjt8")
+mesh = SubResource("CapsuleMesh_wxjxi")
+
+[node name="CameraPivot" type="Node3D" parent="Node3D/CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Node3D/CharacterBody3D/CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 13.0488)
+environment = SubResource("Environment_kelst")
+current = true
+
+[node name="Area3D" type="Area3D" parent="Node3D/CharacterBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/CharacterBody3D/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CylinderShape3D_esnp2")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Node3D"]
+transform = Transform3D(219.07, 0, 0, 0, 1, 0, 0, 0, 268.307, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D/StaticBody3D"]
+material_override = SubResource("StandardMaterial3D_y1uod")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_4clxm")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_qebas")
+
+[node name="Blocco" type="CharacterBody3D" parent="Node3D" groups=["liftable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 2.5)
+motion_mode = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node3D/Blocco"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_n4v70")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D/Blocco"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_n7v8k")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.205948, -0.691948, 0.691949, 0, 0.707107, 0.707107, -0.978563, -0.145627, 0.145627, 9.83861, 9.22688, 9.22688)
+light_energy = 0.5
+shadow_enabled = true
+
+[connection signal="body_entered" from="Node3D/CharacterBody3D/Area3D" to="Node3D/CharacterBody3D" method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="Node3D/CharacterBody3D/Area3D" to="Node3D/CharacterBody3D" method="_on_area_3d_body_exited"]
